@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Regulation Campaign</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #111827;
+      --panel-2: #1f2937;
+      --panel-3: #0f172a;
+      --text: #e5e7eb;
+      --muted: #94a3b8;
+      --accent: #f59e0b;
+      --accent-soft: rgba(245, 158, 11, 0.16);
+      --border: rgba(255, 255, 255, 0.08);
+      --user: #2563eb;
+      --assistant: #f59e0b;
+      --warning: #f59e0b;
+      --max: 1100px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: linear-gradient(180deg, #020617, var(--bg));
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('background.gif') center/cover no-repeat;
+      opacity: 0.55;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .shell {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 2rem 1rem 3rem;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.2rem;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      font-weight: bold;
+      color: var(--text);
+    }
+
+    .brand-badge {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: var(--accent-soft);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      color: #fde68a;
+      font-size: 1rem;
+    }
+
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.9rem;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+    }
+
+    .app-window {
+      background: rgba(17, 24, 39, 0.92);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    }
+
+    .window-bar {
+      background: rgba(255,255,255,0.03);
+      border-bottom: 1px solid var(--border);
+      padding: 0.9rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .dots {
+      display: flex;
+      gap: 0.45rem;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.25);
+    }
+
+    .window-title {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .chat-area {
+      padding: 1.2rem;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent 20%);
+    }
+
+    .message {
+      display: grid;
+      grid-template-columns: 50px 1fr;
+      gap: 1rem;
+      padding: 1rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .message:last-child {
+      border-bottom: none;
+    }
+
+    .avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      font-weight: bold;
+      color: white;
+    }
+
+    .avatar-user {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    }
+
+    .avatar-assistant {
+      background: linear-gradient(135deg, #f59e0b, #facc15);
+    }
+
+    .bubble {
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 1.15rem;
+    }
+
+    .label {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 0.55rem;
+    }
+
+    .bubble h1,
+    .bubble h2,
+    .bubble h3 {
+      line-height: 1.2;
+      margin-bottom: 0.75rem;
+      color: white;
+    }
+
+    .bubble h1 {
+      font-size: 2.4rem;
+    }
+
+    .bubble h2 {
+      font-size: 1.6rem;
+    }
+
+    .bubble p {
+      color: var(--text);
+      margin-bottom: 0.9rem;
+    }
+
+    .bubble p:last-child {
+      margin-bottom: 0;
+    }
+
+    .prompt-box {
+      background: var(--panel-3);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      border-radius: 18px;
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+
+    .prompt-box code {
+      color: #fde68a;
+      font-family: Consolas, monospace;
+      font-size: 0.95rem;
+      white-space: pre-wrap;
+      display: block;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1rem;
+    }
+
+    .card h3 {
+      font-size: 1.05rem;
+      margin-bottom: 0.55rem;
+    }
+
+    .card p {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-bottom: 0;
+    }
+
+    .policy-list {
+      display: grid;
+      gap: 0.9rem;
+      margin-top: 1rem;
+    }
+
+    .policy-item {
+      background: rgba(255,255,255,0.03);
+      border-left: 4px solid var(--accent);
+      border-radius: 12px;
+      padding: 0.9rem 1rem;
+    }
+
+    .policy-item strong {
+      color: white;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+
+    .market-section {
+      margin-top: 1rem;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 1.1rem;
+    }
+
+    .market-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .market-header h3 {
+      margin-bottom: 0.25rem;
+    }
+
+    .market-subtext {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .market-value {
+      text-align: right;
+    }
+
+    .market-value .year {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .market-value .price {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #fde68a;
+      line-height: 1.1;
+    }
+
+    .chart-wrap {
+      position: relative;
+      height: 320px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius: 16px;
+      padding: 0.8rem;
+      overflow: hidden;
+    }
+
+    .chart-svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .chart-slider {
+      width: 100%;
+      margin-top: 1rem;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .slider-labels {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 0.82rem;
+      margin-top: 0.35rem;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .chart-note {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-top: 0.85rem;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem;
+      margin-top: 1rem;
+    }
+
+    .pill {
+      padding: 0.55rem 0.9rem;
+      border-radius: 999px;
+      background: rgba(37, 99, 235, 0.14);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      color: #fde68a;
+      font-size: 0.92rem;
+    }
+
+    .cta-box {
+      margin-top: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.9rem;
+    }
+
+    .btn {
+      text-decoration: none;
+      padding: 0.85rem 1.15rem;
+      border-radius: 12px;
+      font-weight: bold;
+      transition: 0.2s ease;
+      display: inline-block;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #03261f;
+    }
+
+    .btn-secondary {
+      border: 1px solid var(--border);
+      color: var(--text);
+      background: transparent;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .input-area {
+      border-top: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+      padding: 1.25rem;
+    }
+
+    .signup-panel {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 1.2rem;
+    }
+
+    .signup-panel h3 {
+      color: white;
+      margin-bottom: 0.4rem;
+      font-size: 1.2rem;
+    }
+
+    .signup-panel p {
+      color: var(--muted);
+      margin-bottom: 1rem;
+      font-size: 0.96rem;
+    }
+
+    .signup-form {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr) auto;
+      gap: 0.8rem;
+      align-items: center;
+    }
+
+    .signup-form input {
+      width: 100%;
+      padding: 0.9rem 0.95rem;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.03);
+      color: var(--text);
+      outline: none;
+    }
+
+    .signup-form input::placeholder {
+      color: var(--muted);
+    }
+
+    .fake-input {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 0.95rem 1rem;
+      color: var(--muted);
+    }
+
+    .send-btn {
+      background: var(--accent);
+      color: #03261f;
+      border: none;
+      border-radius: 12px;
+      padding: 0.7rem 0.95rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .typewriter {
+      border-right: 2px solid rgba(255,255,255,0.75);
+      white-space: normal;
+      overflow: hidden;
+      animation: blinkCursor 0.8s step-end infinite;
+    }
+
+    @keyframes blinkCursor {
+      50% {
+        border-color: transparent;
+      }
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      margin-top: 1rem;
+      font-size: 0.92rem;
+    }
+
+    @media (max-width: 900px) {
+      .signup-form {
+        grid-template-columns: 1fr;
+      }
+
+      .cards {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar,
+      .window-bar,
+      .fake-input {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .message {
+        grid-template-columns: 1fr;
+      }
+
+      .bubble h1 {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="topbar">
+      <div class="brand">
+        <img src="logo.png" alt="HOPE Logo" style="height:40px; border-radius:8px;" />
+        <span>AI Regulation Campaign</span>
+      </div>
+      <div class="nav-links">
+        <a href="#intro">Intro</a>
+        <a href="#environment">Environment</a>
+        <a href="#development">Development</a>
+        <a href="#policy">Policy</a>
+      </div>
+    </div>
+
+    <div class="app-window">
+      <div class="window-bar">
+        <div class="dots">
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </div>
+        <div class="window-title">New conversation · Why AI needs regulation</div>
+      </div>
+
+      <main class="chat-area">
+        <section class="message" id="intro">
+          <div class="avatar avatar-user">U</div>
+          <div class="bubble">
+            <div class="label">Prompt</div>
+            <p>Why does AI need regulation, especially for environmental and development issues?</p>
+          </div>
+        </section>
+
+        <section class="message">
+          <div class="avatar avatar-assistant">AI</div>
+          <div class="bubble">
+            <div class="label">Response</div>
+            <h1 class="typewriter" data-text="AI should be innovative, but it should also be accountable."></h1>
+            <p>
+              Artificial intelligence is often presented as fast, smart, and efficient. But behind every AI tool is a real-world system of data centers, energy use, water consumption, labor disruption, and unequal access. This campaign argues that regulation is necessary so that AI development does not come at the expense of environmental sustainability or fair social progress.
+            </p>
+            <div class="prompt-box">
+              <code>> request: build powerful AI
+> problem: no clear environmental limits, accountability, or fairness protections
+> solution: regulate AI responsibly</code>
+            </div>
+            <div class="cta-box">
+              <a class="btn btn-primary" href="#policy">See policy ideas</a>
+              <a class="btn btn-secondary" href="#environment">Explore impacts</a>
+            </div>
+          </div>
+        </section>
+
+        <section class="message" id="environment">
+          <div class="avatar avatar-user">U</div>
+          <div class="bubble">
+            <div class="label">Prompt</div>
+            <p>What environmental concerns are linked to AI growth?</p>
+          </div>
+        </section>
+
+        <section class="message">
+          <div class="avatar avatar-assistant">AI</div>
+          <div class="bubble">
+            <div class="label">Response</div>
+            <h2 class="typewriter" data-text="Environmental costs are hidden behind the screen."></h2>
+            <p>
+              AI may feel invisible because it lives online, but it depends on massive physical infrastructure. Training and running large systems requires electricity, cooling systems, hardware production, and continuous upgrades.
+            </p>
+            <div class="cards">
+              <article class="card">
+                <h3>Energy demand</h3>
+                <p>Large models and data centers can increase electricity use and contribute to higher emissions when the energy source is not clean.</p>
+              </article>
+              <article class="card">
+                <h3>Water consumption</h3>
+                <p>Cooling systems in data centers can use large volumes of water, especially in places already facing water stress.</p>
+              </article>
+              <article class="card">
+                <h3>E-waste and mining</h3>
+                <p>AI hardware depends on rare materials, chip manufacturing, and upgrades that add to extraction and electronic waste.</p>
+              </article>
+            </div>
+            <div class="pill-row">
+              <span class="pill">Transparency on energy use</span>
+              <span class="pill">Water reporting</span>
+              <span class="pill">Green infrastructure standards</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="message" id="development">
+          <div class="avatar avatar-user">U</div>
+          <div class="bubble">
+            <div class="label">Prompt</div>
+            <p>How can AI affect development and inequality?</p>
+          </div>
+        </section>
+
+        <section class="message">
+          <div class="avatar avatar-assistant">AI</div>
+          <div class="bubble">
+            <div class="label">Response</div>
+            <h2 class="typewriter" data-text="Development should benefit people, not just systems."></h2>
+            <p>
+              AI can support education, productivity, and innovation, but it can also widen the gap between those who control technology and those who live with its consequences. Without regulation, rapid AI expansion may increase labor disruption, bias, and unequal access to opportunity.
+            </p>
+            <div class="cards">
+              <article class="card">
+                <h3>Job displacement</h3>
+                <p>Workers in repetitive or entry-level roles may face automation without enough retraining or transition support.</p>
+              </article>
+              <article class="card">
+                <h3>Unequal access</h3>
+                <p>Powerful AI systems can remain concentrated in wealthy institutions, making opportunity less equal.</p>
+              </article>
+              <article class="card">
+                <h3>Bias in decisions</h3>
+                <p>Unregulated systems can reproduce unfairness in hiring, lending, education, and public services.</p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section class="message" id="policy">
+          <div class="avatar avatar-user">U</div>
+          <div class="bubble">
+            <div class="label">Prompt</div>
+            <p>What should responsible AI regulation include?</p>
+          </div>
+        </section>
+
+        <section class="message">
+          <div class="avatar avatar-assistant">AI</div>
+          <div class="bubble">
+            <div class="label">Response</div>
+            <h2 class="typewriter" data-text="Regulation should set clear guardrails."></h2>
+            <p>
+              Responsible regulation does not mean stopping innovation. It means creating rules that protect people, communities, and natural resources while encouraging better and more sustainable development.
+            </p>
+            <div class="policy-list">
+              <div class="policy-item">
+                <strong>Require transparency</strong>
+                Companies should disclose major AI systems’ energy use, water use, and environmental footprint.
+              </div>
+              <div class="policy-item">
+                <strong>Set sustainability standards</strong>
+                Large-scale AI systems should meet efficiency standards and reduce unnecessary environmental costs.
+              </div>
+              <div class="policy-item">
+                <strong>Protect workers and communities</strong>
+                Regulation should include safeguards for labor transitions, fairness, and community impact.
+              </div>
+              <div class="policy-item">
+                <strong>Increase accountability</strong>
+                Developers and companies should be held responsible when AI systems cause measurable harm.
+              </div>
+            </div>
+
+            <div class="market-section">
+              <div class="market-header">
+                <div>
+                  <h3>Projected Multimodal AI Market Growth</h3>
+                  <p class="market-subtext">Drag the slider to explore how quickly projected market value rises over time.</p>
+                </div>
+                <div class="market-value">
+                  <div class="year" id="marketYearLabel">Year: 2025</div>
+                  <div class="price" id="marketPriceLabel">$2.51B</div>
+                </div>
+              </div>
+
+              <div class="chart-wrap">
+                <svg class="chart-svg" id="marketChart" viewBox="0 0 900 320" preserveAspectRatio="none"></svg>
+              </div>
+
+              <input class="chart-slider" id="marketSlider" type="range" min="0" max="9" value="0" step="1" />
+              <div class="slider-labels">
+                <span>2025</span>
+                <span>2026</span>
+                <span>2027</span>
+                <span>2028</span>
+                <span>2029</span>
+                <span>2030</span>
+                <span>2031</span>
+                <span>2032</span>
+                <span>2033</span>
+                <span>2034</span>
+              </div>
+              <p class="chart-note">Use the slider to see how a small change in time leads to a much larger projected increase in market value.</p>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <div class="input-area">
+        <div class="signup-panel">
+          <h3>Join the campaign</h3>
+          <p>Sign up to support responsible AI regulation focused on environmental sustainability, fairness, and accountable development.</p>
+          <form class="signup-form">
+            <input type="text" placeholder="Your name" />
+            <input type="email" placeholder="Email address" />
+            <input type="text" placeholder="Why this matters to you" />
+            <button class="send-btn" type="submit">Sign Up</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      Lorem Ipsum
+    </footer>
+  </div>
+  <script>
+    const typewriterElements = document.querySelectorAll('.typewriter');
+
+    function typeText(element, speed = 28) {
+      const text = element.getAttribute('data-text') || '';
+      element.textContent = '';
+      let index = 0;
+
+      function typeNext() {
+        if (index < text.length) {
+          element.textContent += text.charAt(index);
+          index += 1;
+          setTimeout(typeNext, speed);
+        }
+      }
+
+      typeNext();
+    }
+
+    const marketData = [
+      { year: 2025, value: 2.51 },
+      { year: 2026, value: 3.43 },
+      { year: 2027, value: 4.70 },
+      { year: 2028, value: 6.43 },
+      { year: 2029, value: 8.81 },
+      { year: 2030, value: 12.06 },
+      { year: 2031, value: 16.51 },
+      { year: 2032, value: 22.60 },
+      { year: 2033, value: 30.95 },
+      { year: 2034, value: 42.38 }
+    ];
+
+    const svg = document.getElementById('marketChart');
+    const slider = document.getElementById('marketSlider');
+    const yearLabel = document.getElementById('marketYearLabel');
+    const priceLabel = document.getElementById('marketPriceLabel');
+
+    function renderMarketChart(activeIndex) {
+      if (!svg) return;
+
+      const width = 900;
+      const height = 320;
+      const margin = { top: 20, right: 30, bottom: 45, left: 55 };
+      const innerWidth = width - margin.left - margin.right;
+      const innerHeight = height - margin.top - margin.bottom;
+      const maxValue = 45;
+
+      const xStep = innerWidth / (marketData.length - 1);
+      const points = marketData.map((d, i) => {
+        const x = margin.left + i * xStep;
+        const y = margin.top + innerHeight - (d.value / maxValue) * innerHeight;
+        return { ...d, x, y };
+      });
+
+      const activePoint = points[activeIndex];
+      const areaPoints = points
+        .slice(0, activeIndex + 1)
+        .map(p => `${p.x},${p.y}`)
+        .join(' ');
+
+      const areaPath = `M ${margin.left},${margin.top + innerHeight} L ${points
+        .slice(0, activeIndex + 1)
+        .map(p => `${p.x},${p.y}`)
+        .join(' L ')} L ${activePoint.x},${margin.top + innerHeight} Z`;
+
+      const linePath = points
+        .slice(0, activeIndex + 1)
+        .map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`)
+        .join(' ');
+
+      let gridLines = '';
+      for (let i = 0; i <= 5; i++) {
+        const value = i * 9;
+        const y = margin.top + innerHeight - (value / maxValue) * innerHeight;
+        gridLines += `
+          <line x1="${margin.left}" y1="${y}" x2="${width - margin.right}" y2="${y}" stroke="rgba(255,255,255,0.08)" stroke-width="1" />
+          <text x="${margin.left - 12}" y="${y + 4}" text-anchor="end" fill="#94a3b8" font-size="11">${value}</text>`;
+      }
+
+      const xLabels = points.map((p, i) => `
+        <text x="${p.x}" y="${height - 14}" text-anchor="middle" fill="#94a3b8" font-size="11">${marketData[i].year}</text>`).join('');
+
+      const dots = points.map((p, i) => {
+        const isActive = i <= activeIndex;
+        const isCurrent = i === activeIndex;
+        return `
+          <circle cx="${p.x}" cy="${p.y}" r="${isCurrent ? 7 : 4.5}" fill="${isActive ? '#f59e0b' : 'rgba(255,255,255,0.2)'}" stroke="${isCurrent ? '#fde68a' : 'transparent'}" stroke-width="3" />`;
+      }).join('');
+
+      svg.innerHTML = `
+        <rect x="0" y="0" width="${width}" height="${height}" fill="transparent"></rect>
+        ${gridLines}
+        <line x1="${margin.left}" y1="${margin.top + innerHeight}" x2="${width - margin.right}" y2="${margin.top + innerHeight}" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" />
+        <line x1="${margin.left}" y1="${margin.top}" x2="${margin.left}" y2="${margin.top + innerHeight}" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" />
+        <path d="${areaPath}" fill="rgba(37, 99, 235, 0.18)"></path>
+        <path d="${linePath}" fill="none" stroke="#2563eb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></path>
+        ${dots}
+        ${xLabels}
+        <text x="${activePoint.x}" y="${activePoint.y - 14}" text-anchor="middle" fill="#fde68a" font-size="14" font-weight="bold">$${activePoint.value.toFixed(2)}B</text>
+      `;
+
+      yearLabel.textContent = `Year: ${marketData[activeIndex].year}`;
+      priceLabel.textContent = `$${marketData[activeIndex].value.toFixed(2)}B`;
+    }
+
+    if (slider) {
+      slider.addEventListener('input', (event) => {
+        renderMarketChart(Number(event.target.value));
+      });
+    }
+
+    window.addEventListener('load', () => {
+      typewriterElements.forEach((element, i) => {
+        setTimeout(() => typeText(element, 24), i * 900);
+      });
+
+      renderMarketChart(0);
+    });
+  </script>
+</body>
+</html>
+
+
+
+
